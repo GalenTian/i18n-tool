@@ -1,0 +1,23 @@
+{
+  "name": "existing-table",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+	  "type": "git",
+	  "url": "git@github.com:roctive/i18n-tool.git"
+	},
+  "homepage": "https://roctive.github.io/existing-table/",
+  "author": "Galen Tian <galen_tian@126.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "",
+    "should": "^11.2.1"
+  },
+  "dependencies": {
+    "excel-export": "^0.5.1",
+    "xlsx": "^0.9.7"
+  }
+}
