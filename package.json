@@ -17,7 +17,6 @@
     "should": "^11.2.1"
   },
   "dependencies": {
-    "excel-export": "^0.5.1",
     "xlsx": "^0.9.7"
   }
 }
