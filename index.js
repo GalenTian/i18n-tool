@@ -16,18 +16,12 @@ function setArguments(args) {
 	}
 	// dist file name
 	var _distName = args[1];
-	if (args.length === 2) {
-		if (typeof args[1] === 'string') _distName = args[1];
-	}
-	
-	// callback
-	var _callback;
-	if (typeof args[args.length - 1] === 'function') _callback = args[args.length - 1];
+	if (typeof args[1] === 'string') _distName = args[1];
+	else _distName = DEFAULT_FILE_NAME;
 	
 	// Final setting
 	args[0] = _path;
-	args[1] = _distName && typeof _distName === 'string' ? _distName : DEFAULT_FILE_NAME;
-	args[2] = _callback ? _callback : function () {};
+	args[1] = _distName;
 	
 	return args;
 }
@@ -78,28 +72,20 @@ function initWorkbook() {
 	}
 }
 
-exports.jsonToExcel = function (path, distName, callback) {
+exports.jsonToExcel = function (path, distName) {
 	// Deal with arguments
 	arguments = setArguments(arguments);
 	var _path = arguments[0];
 	var _distName = arguments[1];
-	var _callback = arguments[2];
 	
 	// Get language json.
 	var _lang;
-	try {
-		_lang = getLangJson(path);
-	}
-	catch (e) {
-		_callback.call(this, e);
-	}
+	_lang = getLangJson(path);
 	
 	// Convert json to excel
 	var _wb = getWorkbook(_lang, getFileName(path));
 	
 	var _dist = getPath(path) + _distName + '.xlsx';
 	
-	XLSX.writeFile(_wb, _dist);
-	
-	_callback.call(this, null, _dist);
+	return XLSX.writeFile(_wb, _dist);
 };

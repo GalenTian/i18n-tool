@@ -13,19 +13,12 @@ describe('i18n-tool', function () {
 			}
 		});
 		it('should work well without "distName" param', function (done) {
-			i18n.jsonToExcel('./test/zh-CN.json', function (err, data) {
-				should.not.exist(err);
-				done();
-			});
+			var result = i18n.jsonToExcel('./test/zh-CN.json');
+			done();
 		});
 		it('should work well with all params', function (done) {
-			var _fileName = 'test_name';
-			i18n.jsonToExcel('./test/zh-CN.json', _fileName, function (err, data) {
-				//console.log(data);
-				should.not.exist(err);
-				data.indexOf(_fileName).should.be.within(0, 255);
-				done();
-			});
+			var result = i18n.jsonToExcel('./test/zh-CN.json', 'test_name');
+			done();
 		});
 	});
 });
