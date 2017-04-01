@@ -4,48 +4,54 @@ var excel = require('excel-export'),
 
 var DEFAULT_FILE_NAME = 'i18n',
 	SHEET_NAME = 'I18N',
-	KEY_COLUMN = 'Key',
-	ERROR_JSON_TO_EXCEL = 'ERROR: jsonToExcel: "path" value is not valid.';
+	KEY_COLUMN_HEADER = 'Key',
+	ERROR_JSON_TO_EXCEL = 'ERROR: jsonToExcel: "conf" param is null or undefined. ',
+	JSON_EXTENTION = '.json',
+	XLSX_EXTENTION = '.xlsx';
 
-function setArguments(args) {
-	// path
-	var _path = args[0];
-	if (!_path || typeof _path !== 'string') {
+function dealWithConfig(conf) {
+	if (!conf) {
 		throw ERROR_JSON_TO_EXCEL;
-		return args;
 	}
-	// dist file name
-	var _distName = args[1];
-	if (typeof args[1] === 'string') _distName = args[1];
-	else _distName = DEFAULT_FILE_NAME;
 	
-	// Final setting
-	args[0] = _path;
-	args[1] = _distName;
+	if (!conf.files) {
+		conf.files = [];
+	}
 	
-	return args;
+	return conf;
 }
 
-function getLangJson(path) {
-	return require(path);
-}
-
-function getFileName(path) {
-	var _index = path.lastIndexOf('/');
+function getLangJsons(conf) {
+	var _langs = [];
+	if (conf.files.length > 0) {
+		for (var i = 0, length = conf.files.length; i < length; i++) {
+			var _fileName = getJsonFileName(conf.files[i]);
+			_langs.push(require(getBaseDir(conf) + _fileName));
+			_langs[i]._fileName = _fileName.replace(JSON_EXTENTION, '');
+		}
+	}
 	
-	return path.slice(_index > 0 ? (_index + 1) : 0, path.lastIndexOf('.'));
+	return _langs;
 }
 
-function getPath(path) {
-	var _index = path.lastIndexOf('/');
-	
-	return _index > 0 ? path.slice(0, _index + 1) : '';
+function getBaseDir(conf) {
+	return conf.baseDir ? (conf.baseDir.endsWith('/') ? conf.baseDir : (conf.baseDir + '/')) : '';
 }
 
-function getWorkbook(json, fileName) {
+function getJsonFileName(file) {
+	return file.endsWith(JSON_EXTENTION) ? file : (file + JSON_EXTENTION);
+}
+
+function getExcelFileName(conf) {
+	var _file = conf.xlsx;
+	return _file.endsWith(XLSX_EXTENTION) ? _file : (_file + XLSX_EXTENTION);
+}
+
+function getWorkbook(conf) {
+	// Get sheet
 	var _wb = initWorkbook();
 	
-	var _ws = XLSX.utils.aoa_to_sheet(getSheetContent(json, fileName));
+	var _ws = XLSX.utils.aoa_to_sheet(getSheetContent(conf));
 	
 	_wb.SheetNames.push(SHEET_NAME);
 	_wb.Sheets[SHEET_NAME] = _ws;
@@ -53,13 +59,28 @@ function getWorkbook(json, fileName) {
 	return _wb;
 }
 
-function getSheetContent(json, fileName) {
-	var _res = [];
+function getSheetContent(conf) {
+	// Get language json.
+	var _lang;
+	_langs = getLangJsons(conf);
 	
-	// Set columns
-	_res.push([KEY_COLUMN, fileName]);
-	for (var prop in json) {
-		_res.push([prop, json[prop]]);
+	// Set column's headers
+	// Header: KEY, LANG_0, LANG_1, LANG_2...
+	var _res = [[KEY_COLUMN_HEADER]];
+	for (var i = 0, length = _langs.length; i < length; i++) {
+		_res[0].push(_langs[i]._fileName);
+	}
+	// Set content
+	// The key column's contents will be based on the first json file.
+	// Content: KEY, LANG_VAL_0, LANG_VAL_1, LANG_VAL_2...
+	for (var prop in _langs[0]) {
+		var _row = [prop];
+		
+		for (var i = 0, length = _langs.length; i < length; i++) {
+			_row.push(_langs[i][prop]);
+		}
+		
+		_res.push(_row);
 	}
 	
 	return _res;
@@ -72,20 +93,13 @@ function initWorkbook() {
 	}
 }
 
-exports.jsonToExcel = function (path, distName) {
-	// Deal with arguments
-	arguments = setArguments(arguments);
-	var _path = arguments[0];
-	var _distName = arguments[1];
+exports.jsonToExcel = function (conf) {
+	// Deal with config
+	dealWithConfig(conf);
+	// Convert language json to excel
+	var _wb = getWorkbook(conf);
 	
-	// Get language json.
-	var _lang;
-	_lang = getLangJson(path);
-	
-	// Convert json to excel
-	var _wb = getWorkbook(_lang, getFileName(path));
-	
-	var _dist = getPath(path) + _distName + '.xlsx';
-	
+	// Export the xlsx file
+	var _dist = getBaseDir(conf) + getExcelFileName(conf);
 	return XLSX.writeFile(_wb, _dist);
 };
