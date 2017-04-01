@@ -27,8 +27,7 @@ var conf = {
 
 - **xlsx:** It is the name of your Excel file. If it is not set, it will be "i18n" as default.
 
-  > For now, the *.xlsx* file will export to the files folder. 
-  > If all files arn't in the same folder, the *.xlsx* file will export to the first json file folder.
+  > For now, the *.xlsx* file will export to the files folder. If all files arn't in the same folder, the *.xlsx* file will export to the first json file folder.
   
 ### Run export function
 ```javascript
