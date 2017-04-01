@@ -1,4 +1,4 @@
-# i18n-tool
+#p i18n-tool
 A tool to help managing i18n files more efficiently.
 
 ## Using i18n-tool with NodeJS
@@ -27,7 +27,7 @@ var conf = {
 - **xlsx: ** It is the name of your Excel file. If it is not set, it will be "i18n" as default.
   > For now, the *.xlsx* file will export to the files folder. If all files arn't in the same folder, the *.xlsx* file will export to the first json file folder.
   
-### Run exort function
+### Run export function
 ```javascript
 var result = i18n.jsonToExcel(conf);
 ```
