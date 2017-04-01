@@ -9,6 +9,8 @@ A tool to help managing i18n files more efficiently.
 $ npm install i18n-tool
 ```
 
+## Export to xlsx from json files
+
 ### Set configration
 
 ```javascript
