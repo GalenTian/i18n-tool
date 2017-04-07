@@ -1,4 +1,8 @@
 /.vscode
+
 /node_modules
+
 /.project
-/test/MyI18N.xlsx
+
+/test
+/MyI18N.xlsx
